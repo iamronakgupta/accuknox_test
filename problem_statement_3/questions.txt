@@ -1,0 +1,61 @@
+Ques1. Explaining how the highlighted constructs work?
+Ans: 
+Channel Creation: The make(chan func(), 10) statement creates a buffered channel named cnp capable of holding up to 10 functions.
+
+Goroutine Creation: The for loop launches four goroutines concurrently. 
+Each goroutine continuously listens on the channel cnp for incoming functions to execute.
+
+Function Sending: The statement cnp <- func() { fmt.Println("HERE1") } sends a function literal (closure) to the channel cnp. 
+  This function will print "HERE1" when executed.
+
+Function Execution: Inside each goroutine, the for range cnp construct continuously receives functions from the channel. 
+  When a function is received, it is executed immediately by calling it (f()).
+
+Channel Buffering: The buffered channel allows for a degree of buffering, 
+  meaning that multiple functions can be sent to the channel without immediately blocking. 
+  This can help in scenarios where the sending and receiving of tasks are not perfectly synchronized.
+
+Concurrent Execution: Since multiple goroutines are simultaneously listening on the channel, 
+  functions can be processed concurrently, improving overall throughput and responsiveness.
+
+
+
+Ques2. Giving use-cases of what these constructs could be used for.
+Ans: The use case for this code revolves around concurrent and asynchronous task execution. Here's how it can be used:
+
+Concurrent Task Execution: The code allows for the concurrent execution of tasks. 
+  The goroutines created in the loop concurrently listen on the channel for functions to execute. 
+  This can be useful when you have multiple tasks that can be executed independently and you want to process them concurrently.
+
+Asynchronous Task Processing: By using channels to send functions, 
+  this code facilitates asynchronous processing of tasks. Tasks can be sent to the channel from any part of the program, 
+  and the goroutines will execute them asynchronously as they become available on the channel.
+
+Decoupling of Components: This pattern allows for decoupling of components in a system. 
+  The sender can send tasks to the channel without needing to know how they will be executed or by which goroutine. 
+  The goroutines handling the tasks are completely isolated and independently execute the tasks as they arrive on the channel.
+
+
+
+Ques3. What is the significance of the for loop with 4 iterations?
+Ans: The for loop creates four goroutines, each of which concurrently listens on the channel for functions to execute. 
+  This allows for parallel execution of tasks, 
+  which can improve performance in certain scenarios where tasks can be executed independently.
+
+
+
+Ques4. What is the significance of make(chan func(), 10)?
+Ans: This line creates a buffered channel with a buffer size of 10. 
+  The buffer size limits how many functions can be sent to the channel without blocking. 
+  In this case, it allows up to 10 functions to be queued up for execution before any goroutine blocks on sending.
+
+
+
+
+Ques5. Why is “HERE1” not getting printed?
+Ans: "HERE1" is not getting printed because the anonymous function inside the goroutine is continuously 
+  listening on the cnp channel for functions to execute, but the channel is not closed. 
+  Since the program does not close the channel or send any additional functions after sending the "HERE1" function, 
+  the goroutine enters an indefinite loop waiting for more functions to execute. 
+  As a result, the program appears to hang after printing "Hello". To fix this issue, you can close the channel after sending all the functions, 
+  allowing the goroutines to exit the loop and terminate gracefully.
